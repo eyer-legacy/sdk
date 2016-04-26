@@ -100,3 +100,28 @@ And perhaps most importantly, node type definition contains references to all th
  - `aims.core.enabled`
  - `aims.core.disabled`
  - `aims.core.undefined`
+
+## Adding a system
+
+In order to add a system to an environment, you again have to make an API call --- and again, the support for this in the SDK is coming soon. Here's the API address: 
+
+    POST https://beta-api.aimsinnovation.com/api/environments/{environmentId}/systems
+
+The `{environmentId}` is a GUID of your environment, and can be found on the _Agents_ page of the website, in the _Environment API address_ field.
+
+Here's an example of the request body:
+
+```JSON
+{
+  "agentId": "acme.int-sys",
+  "majorVersion": 1,
+  "minorVersion": 0,
+  "name": "ACME System 1"
+}
+```
+
+Here, `agentId` is the same id you used when registering your agent, and `name` is just a human-readable name that denotes the instance of the system your agent is going to monitor. Names are recommended (although not required) to be unique, at least within one environment,  --- and ideally be descriptive of the exact instance of the system (e.g. for a server in might contain its machine name or DNS address), --- because otherwise there's no telling which system is which.
+
+There are two more fields in the request: `majorVersion` and `minorVersion`. They hold the version number of your agent. If you registered a new agent without specifying anything version-related (like in the example above), you can leave them at `1` and `0`, respectively, which are their default values when you register an agent. You still have to specify them explicitly in the request.
+
+In response to your request you will get an object describing your newly created system, which looks similar to what you have sent, but has an additional `id` field. This id is something to note down, because you will need it in order to instantiate an API wrapper provided by this SDK.
