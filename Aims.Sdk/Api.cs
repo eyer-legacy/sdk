@@ -12,7 +12,7 @@ namespace Aims.Sdk
         /// <summary>
         ///   The default API address of the AIMS Platform.
         /// </summary>
-        public static readonly Uri DefaultAddress = new Uri("https://beta-api.aimsinnovation.com/");
+        public static readonly Uri DefaultAddress = new Uri("https://beta-api.aimsinnovation.com/api/");
 
         /// <summary>
         ///   Initializes a new instance of the <see cref="Api"/> class, pointed to the default API address.
