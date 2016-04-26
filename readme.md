@@ -35,34 +35,39 @@ To this address you need to send a JSON object defining our agent. This definiti
   "metadata": {
     "nodeTypes": [ {
         "name": "acme.int-sys.server",
-        "displayName": "ACME Server"
-      }
-    ],
+        "displayName": "ACME Server",
+        "eventTypes": [ "acme.int-sys.server-error" ],
+        "propertyTypes": [ "acme.int-sys.server-os" ],
+        "statTypes": [ "acme.int-sys.server-cpu" ],
+        "statuses": [ "acme.int-sys.unavailable", "aims.core.stopped", "aims.core.started" ]
+    } ],
     "nodePropertyTypes": [ {
-        "name": "acme.int-sys.server-domain",
-        "displayName": "Domain"
-      }
-    ],
+        "name": "acme.int-sys.server-os",
+        "displayName": "operating system"
+    } ],
+    "nodeStatuses": [ {
+        "name": "acme.int-sys.unavailable",
+        "displayName": "unavailable",
+        "type": "stopped"
+    } ],
     "eventTypes": [ {
         "name": "acme.int-sys.server-error",
         "displayName": "ACME server error"
-      }
-    ],
+    } ],
     "statTypes": [ {
         "name": "acme.int-sys.server-cpu",
         "displayName": "CPU load",
         "aggregation": "avg",
         "nodeAggregation": "avg",
         "unitType": "percent"
-      }
-    ]
+    } ]
   }
 }
 ```
 
 This example defines an agent called __ACME Internal System__ (this is the a name that should be descriptive of a _kind of system_ monitored by this agent, e.g. "Windows Server", "PostgreSQL", or "Azure Service Bus"). It also has an `id` that has to consist of two parts: `<company-name>.<agent-name>`, with a total length of 5 to 16 characters (which may be Latin letters and hyphens, except for the one dot splitting the company and the agent names).
 
-Then, all the data types that this agent is going to send to AIMS are defined. Here, it contains one node type, one type of property for that node, an event type and a statistic type. Each of these types has a `name` that consists of the agent's `id` followed by a name for the type itself, with a dot in between the parts. It also has a `displayName` which is something you're going to see in the GUI and email notifications/reports when this type is referred to.
+Then, all the data types that this agent is going to send to AIMS are defined. Here, it contains one node type, one type of property for that node, a custom node status, an event type and a statistic type. Each of these types has a `name` that consists of the agent's `id` followed by a name for the type itself, with a dot in between the parts. It also has a `displayName` which is something you're going to see in the GUI and email notifications/reports when this type is referred to.
 
 Additionally, statistic types have some more fields that define how the statistics are going to be aggregated, and how the metric is going to be called.
 
@@ -79,3 +84,19 @@ Additionally, statistic types have some more fields that define how the statisti
  - `milliseconds`
  - `bytes`
  - `hertz`
+
+Status definition also has a `type` which defines how the status will be treated. It can take one of the following values:
+
+ - `running`
+ - `paused`
+ - `stopped`
+ - `undefined`
+
+And perhaps most importantly, node type definition contains references to all the other data types that a node of a certain type can have. The data types referenced must be either defined in the same metadata definition, or, in case of node statuses they can also be one of the predefined values:
+
+ - `aims.core.running`
+ - `aims.core.paused`
+ - `aims.core.stopped`
+ - `aims.core.enabled`
+ - `aims.core.disabled`
+ - `aims.core.undefined`
