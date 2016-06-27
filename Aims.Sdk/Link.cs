@@ -1,6 +1,6 @@
 ﻿namespace Aims.Sdk
 {
-    public class Link
+    public partial class Link
     {
         public NodeRef From { get; set; }
 

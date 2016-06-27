@@ -46,6 +46,9 @@
     <Compile Include="EventLevel.cs" />
     <Compile Include="HttpHelper.cs" />
     <Compile Include="Link.cs" />
+    <Compile Include="Link.Equality.cs">
+      <DependentUpon>Link.cs</DependentUpon>
+    </Compile>
     <Compile Include="LinkType.cs" />
     <Compile Include="Node.cs" />
     <Compile Include="Node.Equality.cs">
