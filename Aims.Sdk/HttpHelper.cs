@@ -9,8 +9,8 @@ namespace Aims.Sdk
 {
     public class HttpHelper
     {
-        private readonly string _token;
         private readonly long _systemId;
+        private readonly string _token;
 
         public HttpHelper(string token, long systemId)
         {
@@ -18,13 +18,12 @@ namespace Aims.Sdk
             _systemId = systemId;
         }
 
-        private WebClient GetWebClient()
+        public void Delete(Uri uri, Dictionary<string, object> query)
         {
-            var webClient = new WebClient();
-            webClient.Headers.Add(HttpRequestHeader.Authorization, "bearer " + _token);
-            webClient.Headers.Add("X-System", _systemId.ToString(CultureInfo.InvariantCulture));
-
-            return webClient;
+            using (WebClient client = GetWebClient())
+            {
+                client.UploadData(BuildUri(uri, query), "DELETE", new byte[0]);
+            }
         }
 
         public T Get<T>(Uri uri, Dictionary<string, object> query = null)
@@ -47,30 +46,15 @@ namespace Aims.Sdk
             }
         }
 
-        public void Delete(Uri uri, Dictionary<string, object> query)
-        {
-            using (WebClient client = GetWebClient())
-            {
-                client.UploadData(BuildUri(uri, query), "DELETE", new byte[0]);
-            }
-        }
-
         public void Post(Uri uri, object body, Dictionary<string, object> query = null)
         {
-            try
-            {
-                using (WebClient client = GetWebClient())
-                {
-                    client.Headers.Add(HttpRequestHeader.ContentType, "application/json");
+            PostInternal(uri, body, query);
+        }
 
-                    var bodySerialized = body != null ? JsonConvert.SerializeObject(body) : String.Empty;
-                    client.UploadString(BuildUri(uri, query), bodySerialized);
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
+        public T Post<T>(Uri uri, object body, Dictionary<string, object> query = null)
+        {
+            string response = PostInternal(uri, body, query);
+            return JsonConvert.DeserializeObject<T>(response);
         }
 
         private static string BuildUri(Uri uri, Dictionary<string, object> query = null)
@@ -83,6 +67,26 @@ namespace Aims.Sdk
             }
 
             return uri.ToString();
+        }
+
+        private WebClient GetWebClient()
+        {
+            var webClient = new WebClient();
+            webClient.Headers.Add(HttpRequestHeader.Authorization, "bearer " + _token);
+            webClient.Headers.Add("X-System", _systemId.ToString(CultureInfo.InvariantCulture));
+
+            return webClient;
+        }
+
+        private string PostInternal(Uri uri, object body, Dictionary<string, object> query)
+        {
+            using (WebClient client = GetWebClient())
+            {
+                client.Headers.Add(HttpRequestHeader.ContentType, "application/json");
+
+                string bodySerialized = body != null ? JsonConvert.SerializeObject(body) : String.Empty;
+                return client.UploadString(BuildUri(uri, query), bodySerialized);
+            }
         }
     }
 }
