@@ -21,17 +21,6 @@ namespace Aims.Sdk.ExampleAgent
             }
         }
 
-        public static long SystemId
-        {
-            get
-            {
-                long value;
-                if (!Int64.TryParse(ConfigurationManager.AppSettings["system-id"], out value))
-                    throw new FormatException("'system-id' setting has invalid format.");
-                return value;
-            }
-        }
-
         public static string Token
         {
             get { return ConfigurationManager.AppSettings["token"]; }

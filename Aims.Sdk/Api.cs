@@ -18,9 +18,8 @@ namespace Aims.Sdk
         ///   Initializes a new instance of the <see cref="Api"/> class, pointed to the default API address.
         /// </summary>
         /// <param name="token">The authentication token.</param>
-        /// <param name="systemId">The identifier of the system that is to be accessed.</param>
-        public Api(string token, long systemId)
-            : this(DefaultAddress, token, systemId)
+        public Api(string token)
+            : this(DefaultAddress, token)
         {
         }
 
@@ -29,8 +28,7 @@ namespace Aims.Sdk
         /// </summary>
         /// <param name="uri">The URI poiting to the root of the API.</param>
         /// <param name="token">The authentication token.</param>
-        /// <param name="systemId">The identifier of the system that is to be accessed.</param>
-        public Api(Uri uri, string token, long systemId)
+        public Api(Uri uri, string token)
         {
             Uri = uri;
 
@@ -39,7 +37,7 @@ namespace Aims.Sdk
             Nodes = new NodesApi(this);
             StatPoints = new StatPointsApi(this);
 
-            HttpHelper = new HttpHelper(token, systemId);
+            HttpHelper = new HttpHelper(token);
         }
 
         /// <summary>

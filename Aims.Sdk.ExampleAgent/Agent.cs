@@ -8,9 +8,9 @@ namespace Aims.Sdk.ExampleAgent
         private readonly TopologyMonitor _topologyMonitor;
         private readonly StatisticsMonitor _statisticsMonitor;
 
-        public Agent(Uri apiAddress, string token, long systemId)
+        public Agent(Uri apiAddress, string token)
         {
-            var api = new Api(apiAddress, token, systemId);
+            var api = new Api(apiAddress, token);
             var nodeRef = new NodeRef
             {
                 NodeType = AgentConstants.NodeType.Server,

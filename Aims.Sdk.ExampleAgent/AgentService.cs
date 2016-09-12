@@ -31,7 +31,7 @@ namespace Aims.Sdk.ExampleAgent
                 try
                 {
                     var apiAddress = new Uri(new Uri(Config.ApiEndPoint), "environments/" + Config.EnvironmentId);
-                    _agent = new Agent(apiAddress, Config.Token, Config.SystemId);
+                    _agent = new Agent(apiAddress, Config.Token);
                 }
                 catch (Exception ex)
                 {

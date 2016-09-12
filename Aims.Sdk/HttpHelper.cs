@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Net;
 using Newtonsoft.Json;
@@ -9,13 +8,11 @@ namespace Aims.Sdk
 {
     public class HttpHelper
     {
-        private readonly long _systemId;
         private readonly string _token;
 
-        public HttpHelper(string token, long systemId)
+        public HttpHelper(string token)
         {
             _token = token;
-            _systemId = systemId;
         }
 
         public void Delete(Uri uri, Dictionary<string, object> query)
@@ -73,7 +70,6 @@ namespace Aims.Sdk
         {
             var webClient = new WebClient();
             webClient.Headers.Add(HttpRequestHeader.Authorization, "bearer " + _token);
-            webClient.Headers.Add("X-System", _systemId.ToString(CultureInfo.InvariantCulture));
 
             return webClient;
         }
