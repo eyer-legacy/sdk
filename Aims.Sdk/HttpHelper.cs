@@ -8,11 +8,11 @@ namespace Aims.Sdk
 {
     public class HttpHelper
     {
-        private readonly string _token;
+        private readonly HttpCredentials _credentials;
 
-        public HttpHelper(string token)
+        public HttpHelper(HttpCredentials credentials)
         {
-            _token = token;
+            _credentials = credentials;
         }
 
         public void Delete(Uri uri, Dictionary<string, object> query)
@@ -69,8 +69,7 @@ namespace Aims.Sdk
         private WebClient GetWebClient()
         {
             var webClient = new WebClient();
-            webClient.Headers.Add(HttpRequestHeader.Authorization, "bearer " + _token);
-
+            _credentials.SetHeaders(webClient.Headers);
             return webClient;
         }
 

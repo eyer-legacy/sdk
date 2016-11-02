@@ -44,7 +44,10 @@
     <Compile Include="DictionaryEqualityComparer.cs" />
     <Compile Include="Event.cs" />
     <Compile Include="EventLevel.cs" />
+    <Compile Include="HttpBasicCredentials.cs" />
+    <Compile Include="HttpCredentials.cs" />
     <Compile Include="HttpHelper.cs" />
+    <Compile Include="HttpOAuth2Credentials.cs" />
     <Compile Include="Link.cs" />
     <Compile Include="Link.Equality.cs">
       <DependentUpon>Link.cs</DependentUpon>
