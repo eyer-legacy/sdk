@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.ServiceProcess;
+using Env = System.Environment;
 
 namespace Aims.Sdk.ExampleAgent
 {
@@ -30,12 +31,11 @@ namespace Aims.Sdk.ExampleAgent
 
                 try
                 {
-                    var apiAddress = new Uri(new Uri(Config.ApiEndPoint), "environments/" + Config.EnvironmentId);
-                    _agent = new Agent(apiAddress, Config.Token);
+                    _agent = new Agent(new Uri(Config.ApiEndPoint), Config.EnvironmentId, Config.Token);
                 }
                 catch (Exception ex)
                 {
-                    _eventLog.WriteEntry(String.Format("Failed to start the agent:{0}{1}", Environment.NewLine, ex),
+                    _eventLog.WriteEntry(String.Format("Failed to start the agent:{0}{1}", Env.NewLine, ex),
                         EventLogEntryType.Error);
                 }
             }
@@ -53,7 +53,7 @@ namespace Aims.Sdk.ExampleAgent
                 }
                 catch (Exception ex)
                 {
-                    _eventLog.WriteEntry(String.Format("Failed to stop the agent:{0}{1}", Environment.NewLine, ex),
+                    _eventLog.WriteEntry(String.Format("Failed to stop the agent:{0}{1}", Env.NewLine, ex),
                         EventLogEntryType.Error);
                 }
                 _agent = null;

@@ -33,10 +33,12 @@ namespace Aims.Sdk
         {
             Uri = uri;
 
+            Environments = new EnvironmentsApi(this);
             Events = new EventsApi(this);
             Links = new LinksApi(this);
             Nodes = new NodesApi(this);
             StatPoints = new StatPointsApi(this);
+            Systems = new SystemsApi(this);
 
             HttpHelper = new HttpHelper(credentials);
         }
@@ -62,11 +64,31 @@ namespace Aims.Sdk
         }
 
         /// <summary>
+        ///   Gets or sets the identifier of the environment this API accessor connects to.
+        ///   This property must be set before environment-specific API methods are used.
+        /// </summary>
+        /// <value>
+        ///   The identifier of the environment this API accessor connects to.
+        /// </value>
+        public Guid? EnvironmentId { get; set; }
+
+        /// <summary>
+        ///   Gets an API accessor for environments.
+        /// </summary>
+        /// <value>
+        ///   An API accessor for environments.
+        /// </value>
+        public EnvironmentsApi Environments { get; private set; }
+
+        /// <summary>
         ///   Gets an API accessor for events.
         /// </summary>
         /// <value>
         ///   An API accessor for events.
         /// </value>
+        /// <remarks>
+        ///   <see cref="EnvironmentId"/> must be set before using this property.
+        /// </remarks>
         public EventsApi Events { get; private set; }
 
         /// <summary>
@@ -75,6 +97,9 @@ namespace Aims.Sdk
         /// <value>
         ///   An API accessor for links between nodes.
         /// </value>
+        /// <remarks>
+        ///   <see cref="EnvironmentId"/> must be set before using this property.
+        /// </remarks>
         public LinksApi Links { get; private set; }
 
         /// <summary>
@@ -83,6 +108,9 @@ namespace Aims.Sdk
         /// <value>
         ///   An API accessor for nodes.
         /// </value>
+        /// <remarks>
+        ///   <see cref="EnvironmentId"/> must be set before using this property.
+        /// </remarks>
         public NodesApi Nodes { get; private set; }
 
         /// <summary>
@@ -91,15 +119,42 @@ namespace Aims.Sdk
         /// <value>
         ///   An API accessor for statistics.
         /// </value>
+        /// <remarks>
+        ///   <see cref="EnvironmentId"/> must be set before using this property.
+        /// </remarks>
         public StatPointsApi StatPoints { get; private set; }
 
         /// <summary>
-        ///   Gets the URI poiting to the root of the API.
+        ///   Gets an API accessor for systems.
         /// </summary>
         /// <value>
-        ///   The URI poiting to the root of the API.
+        ///   An API accessor for systems.
+        /// </value>
+        public SystemsApi Systems { get; private set; }
+
+        /// <summary>
+        ///   Gets the URI pointing to the root of the API.
+        /// </summary>
+        /// <value>
+        ///   The URI pointing to the root of the API.
         /// </value>
         public Uri Uri { get; private set; }
+
+        /// <summary>
+        ///   Gets the URI pointing to the environment-specific root of the API.
+        /// </summary>
+        /// <value>
+        ///   The URI pointing to the environment-specific root of the API.
+        /// </value>
+        protected Uri EnvironmentUri
+        {
+            get
+            {
+                if (!EnvironmentId.HasValue)
+                    throw new InvalidOperationException("EnvironmentId must be set before using this property.");
+                return new Uri(Uri, String.Format("environments/{0}/", EnvironmentId));
+            }
+        }
 
         /// <summary>
         ///   Gets the HTTP helper of this instance.
@@ -108,6 +163,34 @@ namespace Aims.Sdk
         ///   The HTTP helper of this instance.
         /// </value>
         protected HttpHelper HttpHelper { get; private set; }
+
+        /// <summary>
+        ///   Provides convenient access to the environment-related API methods of the AIMS Platform.
+        /// </summary>
+        public class EnvironmentsApi
+        {
+            private readonly Api _api;
+
+            /// <summary>
+            ///   Initializes a new instance of the <see cref="EnvironmentsApi"/> class.
+            /// </summary>
+            /// <param name="api">The API accessor.</param>
+            internal EnvironmentsApi(Api api)
+            {
+                _api = api;
+            }
+
+            /// <summary>
+            ///   Gets all available environments.
+            /// </summary>
+            /// <returns>
+            ///   All available environments.
+            /// </returns>
+            public Environment[] Get()
+            {
+                return _api.HttpHelper.Get<Environment[]>(new Uri(_api.Uri, "environments"));
+            }
+        }
 
         /// <summary>
         ///   Provides convenient access to the event-related API methods of the AIMS Platform.
@@ -131,7 +214,7 @@ namespace Aims.Sdk
             /// <param name="events">The events to send.</param>
             public void Send(Event[] events)
             {
-                _api.HttpHelper.Post(new Uri(_api.Uri + "/events"), events);
+                _api.HttpHelper.Post(new Uri(_api.EnvironmentUri, "events"), events);
             }
         }
 
@@ -157,7 +240,7 @@ namespace Aims.Sdk
             /// <param name="links">The links to send.</param>
             public void Send(Link[] links)
             {
-                _api.HttpHelper.Post(new Uri(_api.Uri + "/links"), links);
+                _api.HttpHelper.Post(new Uri(_api.EnvironmentUri, "links"), links);
             }
         }
 
@@ -167,7 +250,6 @@ namespace Aims.Sdk
         public class NodesApi
         {
             private readonly Api _api;
-            private readonly Uri _nodesUri;
 
             /// <summary>
             ///   Initializes a new instance of the <see cref="NodesApi"/> class.
@@ -176,7 +258,17 @@ namespace Aims.Sdk
             internal NodesApi(Api api)
             {
                 _api = api;
-                _nodesUri = new Uri(_api.Uri + "/nodes");
+            }
+
+            /// <summary>
+            ///   Gets the URI pointing to the node API.
+            /// </summary>
+            /// <value>
+            ///   The URI pointing to the node API.
+            /// </value>
+            private Uri NodesUri
+            {
+                get { return new Uri(_api.EnvironmentUri, "nodes"); }
             }
 
             /// <summary>
@@ -187,7 +279,7 @@ namespace Aims.Sdk
             /// </returns>
             public Node[] Get()
             {
-                return _api.HttpHelper.Get<Node[]>(_nodesUri,
+                return _api.HttpHelper.Get<Node[]>(NodesUri,
                     new Dictionary<string, object> { { "include", "node-ref+node-props" } });
             }
 
@@ -200,7 +292,7 @@ namespace Aims.Sdk
             /// </returns>
             public Node Get(NodeRef nodeRef)
             {
-                return _api.HttpHelper.Get<Node>(_nodesUri, ConvertToQuery(nodeRef));
+                return _api.HttpHelper.Get<Node>(NodesUri, ConvertToQuery(nodeRef));
             }
 
             /// <summary>
@@ -209,7 +301,7 @@ namespace Aims.Sdk
             /// <param name="nodeRef">The node reference to look for.</param>
             public void Remove(NodeRef nodeRef)
             {
-                _api.HttpHelper.Delete(_nodesUri, ConvertToQuery(nodeRef));
+                _api.HttpHelper.Delete(NodesUri, ConvertToQuery(nodeRef));
             }
 
             /// <summary>
@@ -218,7 +310,7 @@ namespace Aims.Sdk
             /// <param name="nodes">The nodes to send.</param>
             public void Send(Node[] nodes)
             {
-                _api.HttpHelper.Post(_nodesUri, nodes);
+                _api.HttpHelper.Post(NodesUri, nodes);
             }
 
             private static Dictionary<string, object> ConvertToQuery(NodeRef nodeRef)
@@ -253,7 +345,51 @@ namespace Aims.Sdk
             /// <param name="points">The stat points to send.</param>
             public void Send(StatPoint[] points)
             {
-                _api.HttpHelper.Post(new Uri(_api.Uri + "/statPoints"), points);
+                _api.HttpHelper.Post(new Uri(_api.EnvironmentUri, "statPoints"), points);
+            }
+        }
+
+        /// <summary>
+        ///   Provides convenient access to the system-related API methods of the AIMS Platform.
+        /// </summary>
+        public class SystemsApi
+        {
+            private readonly Api _api;
+
+            /// <summary>
+            ///   Initializes a new instance of the <see cref="SystemsApi"/> class.
+            /// </summary>
+            /// <param name="api">The API accessor.</param>
+            internal SystemsApi(Api api)
+            {
+                _api = api;
+            }
+
+            /// <summary>
+            ///   Gets all systems in the current environment.
+            /// </summary>
+            /// <returns>
+            ///   All systems in the current environment.
+            /// </returns>
+            /// <remarks>
+            ///   <see cref="EnvironmentId"/> must be set before using this method.
+            /// </remarks>
+            public System[] Get()
+            {
+                if (!_api.EnvironmentId.HasValue)
+                    throw new InvalidOperationException("EnvironmentId must be set before using this method.");
+                return Get(_api.EnvironmentId.Value);
+            }
+
+            /// <summary>
+            ///   Gets all systems in an environment.
+            /// </summary>
+            /// <returns>
+            ///   All systems in an environment.
+            /// </returns>
+            public System[] Get(Guid environmentId)
+            {
+                return _api.HttpHelper.Get<System[]>(new Uri(_api.Uri, "environments/" + environmentId + "/systems"));
             }
         }
     }

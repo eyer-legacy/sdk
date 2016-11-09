@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="Api.cs" />
     <Compile Include="DictionaryEqualityComparer.cs" />
+    <Compile Include="Environment.cs" />
     <Compile Include="Event.cs" />
     <Compile Include="EventLevel.cs" />
     <Compile Include="HttpBasicCredentials.cs" />
@@ -63,6 +64,7 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StatPoint.cs" />
+    <Compile Include="System.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

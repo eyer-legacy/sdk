@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Env = System.Environment;
 
 namespace Aims.Sdk.ExampleAgent
 {
@@ -22,12 +23,12 @@ namespace Aims.Sdk.ExampleAgent
                 new Node
                 {
                     NodeRef = _nodeRef,
-                    Name = Environment.MachineName,
+                    Name = Env.MachineName,
                     ModificationTime = DateTimeOffset.Now,
                     Status = GetStatus(),
                     Properties = new Dictionary<string, string>
                     {
-                        { AgentConstants.PropertyType.ServerOs, Environment.OSVersion.VersionString },
+                        { AgentConstants.PropertyType.ServerOs, Env.OSVersion.VersionString },
                     },
                 },
             };
