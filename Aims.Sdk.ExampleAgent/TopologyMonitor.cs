@@ -6,10 +6,10 @@ namespace Aims.Sdk.ExampleAgent
 {
     public class TopologyMonitor : MonitorBase<Node>
     {
-        private readonly Api _api;
+        private readonly EnvironmentApi _api;
         private readonly NodeRef _nodeRef;
 
-        public TopologyMonitor(Api api, NodeRef nodeRef)
+        public TopologyMonitor(EnvironmentApi api, NodeRef nodeRef)
             : base((int)TimeSpan.FromMinutes(5).TotalMilliseconds)
         {
             _api = api;

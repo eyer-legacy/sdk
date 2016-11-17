@@ -6,6 +6,8 @@ namespace Aims.Sdk
     {
         public long Id { get; set; }
 
+        public Guid EnvironmentId { get; set; }
+
         public string Name { get; set; }
 
         public string AgentId { get; set; }

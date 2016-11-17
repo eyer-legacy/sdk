@@ -40,9 +40,32 @@
     <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Api.Auth.cs">
+      <DependentUpon>Api.cs</DependentUpon>
+    </Compile>
     <Compile Include="Api.cs" />
+    <Compile Include="Api.Environments.cs">
+      <DependentUpon>Api.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ApiBase.cs" />
     <Compile Include="DictionaryEqualityComparer.cs" />
     <Compile Include="Environment.cs" />
+    <Compile Include="EnvironmentApi.cs" />
+    <Compile Include="EnvironmentApi.Events.cs">
+      <DependentUpon>EnvironmentApi.cs</DependentUpon>
+    </Compile>
+    <Compile Include="EnvironmentApi.Links.cs">
+      <DependentUpon>EnvironmentApi.cs</DependentUpon>
+    </Compile>
+    <Compile Include="EnvironmentApi.Nodes.cs">
+      <DependentUpon>EnvironmentApi.cs</DependentUpon>
+    </Compile>
+    <Compile Include="EnvironmentApi.StatPoints.cs">
+      <DependentUpon>EnvironmentApi.cs</DependentUpon>
+    </Compile>
+    <Compile Include="EnvironmentApi.Systems.cs">
+      <DependentUpon>EnvironmentApi.cs</DependentUpon>
+    </Compile>
     <Compile Include="Event.cs" />
     <Compile Include="EventLevel.cs" />
     <Compile Include="HttpBasicCredentials.cs" />

@@ -10,12 +10,12 @@ namespace Aims.Sdk.ExampleAgent
         private const string CounterName = "% Processor Time";
         private const string InstanceName = "_Total";
 
-        private readonly Api _api;
+        private readonly EnvironmentApi _api;
         private readonly NodeRef _nodeRef;
 
         private PerformanceCounter _counter;
 
-        public StatisticsMonitor(Api api, NodeRef nodeRef)
+        public StatisticsMonitor(EnvironmentApi api, NodeRef nodeRef)
             : base((int)TimeSpan.FromMinutes(1).TotalMilliseconds)
         {
             _api = api;

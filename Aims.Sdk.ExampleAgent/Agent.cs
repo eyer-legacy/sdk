@@ -11,7 +11,8 @@ namespace Aims.Sdk.ExampleAgent
 
         public Agent(Uri apiAddress, Guid environmentId, string token)
         {
-            var api = new Api(apiAddress, token) { EnvironmentId = environmentId };
+            var api = new Api(apiAddress, token)
+                .ForEnvironment(environmentId);
             var nodeRef = new NodeRef
             {
                 NodeType = AgentConstants.NodeType.Server,
