@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Runtime.Serialization;
 
 namespace Aims.Sdk
@@ -26,7 +27,29 @@ namespace Aims.Sdk
             }
 
             /// <summary>
-            ///   Get an agent auth token that can be used to connect to a system.
+            ///   Deactivates an auth token.
+            /// </summary>
+            /// <param name="token">The token to deactivate.</param>
+            public void DeleteToken(string token)
+            {
+                string thumbprint = token.Substring(0, 6);
+
+                try
+                {
+                    _api.HttpHelper.Delete(new Uri(_api.Uri, "tokens/" + thumbprint), new Dictionary<string, object>());
+                }
+                catch (WebException ex)
+                {
+                    var response = ex.Response as HttpWebResponse;
+                    if (response != null && response.StatusCode == HttpStatusCode.NotFound)
+                        return;
+
+                    throw;
+                }
+            }
+
+            /// <summary>
+            ///   Gets an agent auth token that can be used to connect to a system.
             /// </summary>
             /// <param name="system">The system to get a token for.</param>
             /// <returns>
