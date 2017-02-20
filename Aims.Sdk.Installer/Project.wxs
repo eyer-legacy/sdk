@@ -1,0 +1,118 @@
+<?xml version='1.0' encoding='windows-1252'?>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
+    xmlns:util="http://wixtoolset.org/schemas/v4/wxs/util">
+  <Product Name='Example Agent 1.0' Id='PUT-GUID-HERE' UpgradeCode='PUT-GUID-HERE'
+      Language='1033' Codepage='1252' Version='1.0.0' Manufacturer='AIMS Innovation'>
+    <Package Id='*' Keywords='Installer'
+        Description="Example Agent 1.0 Installer"
+        Manufacturer='AIMS Innovation'
+        InstallerVersion='200' Languages='1033' Compressed='yes' SummaryCodepage='1252' />
+
+    <Media Id='1' Cabinet='Main.cab' EmbedCab='yes' DiskPrompt="CD-ROM #1" />
+    <Property Id='DiskPrompt' Value="Example Agent 1.0 Installation [1]" />
+
+    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLDIR" />
+
+    <Property Id="AIMS_AGENT_ID" Secure="yes" Value="acme.int-sys" />
+    <Property Id="AIMS_AGENT_VERSION" Secure="yes" Value="v1.0" />
+    <Property Id="AIMS_SERVICE_ACCOUNT_VALID" Secure="yes" />
+    <Property Id="AIMS_SERVICE_USER" Secure="yes" />
+    <Property Id="AIMS_SERVICE_PASSWORD" Secure="yes" />
+    <Property Id="AIMS_EMAIL" Secure="yes" />
+    <Property Id="AIMS_PASSWORD" Secure="yes" />
+    <Property Id="AIMS_API_ENDPOINT" Secure="yes" Value="https://api.aimsinnovation.com">
+      <RegistrySearch Id="ApiEndpointRegistrySearch" Root="HKLM" Key="Software\[Manufacturer]\[ProductName]"
+          Name="ApiEndpoint" Type="raw" />
+    </Property>
+    <Property Id="AIMS_API_TOKEN" Secure="yes">
+      <RegistrySearch Id="ApiTokenRegistrySearch" Root="HKLM" Key="Software\[Manufacturer]\[ProductName]"
+          Name="ApiToken" Type="raw" />
+    </Property>
+    <Property Id="AIMS_ENVIRONMENT" Secure="yes" />
+    <Property Id="AIMS_ENVIRONMENT_ID" Secure="yes" />
+    <Property Id="AIMS_ENVIRONMENT_NAME" Secure="yes" />
+    <Property Id="AIMS_SYSTEM" Secure="yes" />
+    <Property Id="AIMS_SYSTEM_ID" Secure="yes" />
+    <Property Id="AIMS_SYSTEM_NAME" Secure="yes" />
+    <Property Id="AIMS_API_ERROR" Secure="yes" />
+    <Property Id="AIMS_ERROR" Secure="yes" />
+
+    <EnsureTable Id="ListBox" />
+
+    <Binary Id="Aims.Sdk.Installer.Actions.dll"
+        SourceFile="$(var.Aims.Sdk.Installer.Actions.TargetDir)\$(var.Aims.Sdk.Installer.Actions.TargetName).CA.dll" />
+
+    <CustomAction Id="ReadEnvironments" BinaryKey="Aims.Sdk.Installer.Actions.dll"
+        DllEntry="ReadEnvironments" Execute="immediate" Return="check" />
+    <CustomAction Id="ReadSystems" BinaryKey="Aims.Sdk.Installer.Actions.dll"
+        DllEntry="ReadSystems" Execute="immediate" Return="check" />
+    <CustomAction Id="SaveEnvironment" BinaryKey="Aims.Sdk.Installer.Actions.dll"
+        DllEntry="SaveEnvironment" Execute="immediate" Return="check" />
+    <CustomAction Id="SaveSystem" BinaryKey="Aims.Sdk.Installer.Actions.dll"
+        DllEntry="SaveSystem" Execute="immediate" Return="check" />
+    <CustomAction Id="ValidateServiceAccount" BinaryKey="Aims.Sdk.Installer.Actions.dll"
+        DllEntry="ValidateServiceAccount" Execute="immediate" Return="check" />
+    <CustomAction Id="GetToken" BinaryKey="Aims.Sdk.Installer.Actions.dll"
+        DllEntry="GetToken" Execute="immediate" Return="check" />
+    <CustomAction Id="DeleteToken" BinaryKey="Aims.Sdk.Installer.Actions.dll"
+        DllEntry="DeleteToken" Execute="immediate" Return="check" />
+    <CustomAction Id="UpdateConfig" BinaryKey="Aims.Sdk.Installer.Actions.dll"
+        DllEntry="UpdateConfig" Execute="immediate" Return="check" />
+    <CustomAction Id="InstallService" BinaryKey="Aims.Sdk.Installer.Actions.dll"
+        DllEntry="InstallService" Execute="immediate" Return="check" />
+    <CustomAction Id="UninstallService" BinaryKey="Aims.Sdk.Installer.Actions.dll"
+        DllEntry="UninstallService" Execute="immediate" Return="check" />
+
+    <InstallExecuteSequence>
+      <Custom Action="GetToken" After="InstallFiles">NOT INSTALLED AND NOT REMOVE</Custom>
+      <Custom Action="DeleteToken" Before="InstallFiles">REMOVE~="ALL"</Custom>
+    </InstallExecuteSequence>
+
+    <Directory Id='TARGETDIR' Name='SourceDir'>
+      <Directory Id='ProgramFilesFolder' Name='PFiles'>
+        <Directory Id='AIMS Innovation' Name='AIMS Innovation'>
+          <Directory Id='INSTALLDIR' Name='Example Agent 1.0'>
+            <Component Id='MainExecutable' Guid='PUT-GUID-HERE'>
+              <File Id='ExampleAgentExe' Name='aims-example-agent.exe' DiskId='1'
+                  Source='$(var.Aims.Sdk.ExampleAgent.TargetPath)' KeyPath='yes' />
+              <File Id='ExampleAgentExeConfig' Name='aims-example-agent.exe.config' DiskId='1'
+                  Source='$(var.Aims.Sdk.ExampleAgent.TargetPath).config' />
+              <util:XmlFile Id="ExampleAgentExeConfigSetSetting1" File="[#ExampleAgentExeConfig]"
+                  Action="setValue" Name="value" SelectionLanguage="XPath" Permanent="yes" Sequence="1"
+                  ElementPath="//appSettings/add[\[]@key='api-endpoint'[\]]" Value="[AIMS_API_ENDPOINT]/api/" />
+              <util:XmlFile Id="ExampleAgentExeConfigSetSetting2" File="[#ExampleAgentExeConfig]"
+                  Action="setValue" Name="value" SelectionLanguage="XPath" Permanent="yes" Sequence="2"
+                  ElementPath="//appSettings/add[\[]@key='environment-id'[\]]" Value="[AIMS_ENVIRONMENT_ID]" />
+              <util:XmlFile Id="ExampleAgentExeConfigSetSetting3" File="[#ExampleAgentExeConfig]"
+                  Action="setValue" Name="value" SelectionLanguage="XPath" Permanent="yes" Sequence="3"
+                  ElementPath="//appSettings/add[\[]@key='token'[\]]" Value="[AIMS_API_TOKEN]" />
+              <File Id='AimsSdkDll' Name='Aims.Sdk.dll' DiskId='1'
+                  Source='$(var.Aims.Sdk.ExampleAgent.TargetDir)\Aims.Sdk.dll' />
+              <File Id='NewtonsoftJsonDll' Name='Newtonsoft.Json.dll' DiskId='1'
+                  Source='$(var.Aims.Sdk.ExampleAgent.TargetDir)\Newtonsoft.Json.dll' />
+              <RegistryValue Id='ApiTokenRegistryValue' Root='HKLM' Key='Software\[Manufacturer]\[ProductName]'
+                  Name='ApiToken' Value='[AIMS_API_TOKEN]' Type='string' />
+              <RegistryValue Id='ApiEndpointRegistryValue' Root='HKLM' Key='Software\[Manufacturer]\[ProductName]'
+                  Name='ApiEndpoint' Value='[AIMS_API_ENDPOINT]' Type='string' />
+              <ServiceInstall Id="ExampleAgentServiceInstall" Type="ownProcess"
+                  Name="aims-example-agent" DisplayName="AIMS Example Agent"
+                  Start="auto" Account="[AIMS_SERVICE_USER]" Password="[AIMS_SERVICE_PASSWORD]"
+                  ErrorControl="normal" Vital="yes" />
+              <ServiceControl Id="ExampleAgentServiceControl" Name="aims-example-agent"
+                  Start="install" Stop="uninstall" Remove="uninstall" Wait="yes" />
+            </Component>
+          </Directory>
+        </Directory>
+      </Directory>
+    </Directory>
+
+    <Feature Id='Complete' Title='Example Agent 1.0' Description='The complete package.'
+        Display='expand' Level='1' ConfigurableDirectory='INSTALLDIR'>
+      <Feature Id='MainProgram' Title='Program' Description='The main executable.' Level='1'>
+        <ComponentRef Id='MainExecutable' />
+      </Feature>
+    </Feature>
+
+    <UIRef Id="InstallUI" />
+  </Product>
+</Wix>
