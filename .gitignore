@@ -3,3 +3,5 @@ bin
 obj
 *.suo
 *.user
+.vs/
+WiX.4.0.0.5512-pre/
