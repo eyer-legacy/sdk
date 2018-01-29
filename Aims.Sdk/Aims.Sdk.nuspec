@@ -3,7 +3,7 @@
   <metadata>
     <id>Aims.Sdk</id>
     <version>$version$</version>
-    <title>$title$</title>
+    <title>Aims SDK</title>
     <authors>Aims Innovation</authors>
     <owners>Aims Innovation</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
