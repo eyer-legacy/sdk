@@ -1,0 +1,6 @@
+assembly-informational-format: '{NuGetVersionV2}'
+assembly-versioning-scheme: MajorMinorPatch
+assembly-file-versioning-scheme: MajorMinorPatchTag
+branches: {}
+ignore:
+  sha: []

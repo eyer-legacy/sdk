@@ -16,7 +16,7 @@ namespace Aims.Sdk
         /// </summary>
         /// <param name="api">The API wrapper.</param>
         /// <param name="environmentId">The identifier of an environment to point to.</param>
-        internal EnvironmentApi(ApiBase api, Guid environmentId)
+        public EnvironmentApi(ApiBase api, Guid environmentId)
             : base(api)
         {
             _environmentId = environmentId;
