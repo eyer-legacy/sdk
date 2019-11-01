@@ -1,0 +1,5 @@
+<Project>
+ <PropertyGroup>
+   <GitVersion_NoFetchEnabled>true</GitVersion_NoFetchEnabled>
+ </PropertyGroup>
+</Project>
