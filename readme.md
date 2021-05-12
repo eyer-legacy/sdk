@@ -132,3 +132,4 @@ Here, `agentId` is the same id you used when registering your agent, and `name` 
 There are two more fields in the request: `majorVersion` and `minorVersion`. They hold the version number of your agent. If you registered a new agent without specifying anything version-related (like in the example above), you can leave them at `1` and `0`, respectively, which are their default values when you register an agent. You still have to specify them explicitly in the request.
 
 In response to your request you will get an object describing your newly created system, which looks similar to what you have sent, but has an additional `id` field. This id is something to note down, because you will need it in order to instantiate an API wrapper provided by this SDK.
+
