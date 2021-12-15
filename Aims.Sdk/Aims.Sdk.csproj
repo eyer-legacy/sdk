@@ -1,106 +1,23 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{5170FBD5-E775-47CD-A1B7-0BE61B73EFEB}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Aims.Sdk</RootNamespace>
-    <AssemblyName>Aims.Sdk</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
+    <TargetFrameworks>netstandard2.1;net35;net40;net45;net461;net48</TargetFrameworks>
+    <Description>AIMS .NET SDK</Description>
+    <Title>AIMS .NET SDK</Title>
+    <PackageTags>AIMS SDK</PackageTags>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Runtime.Serialization" />
+    <PackageReference Include="GitVersion.MsBuild" Version="5.8.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Api.Auth.cs">
-      <DependentUpon>Api.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Api.cs" />
-    <Compile Include="Api.Environments.cs">
-      <DependentUpon>Api.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ApiBase.cs" />
-    <Compile Include="DictionaryEqualityComparer.cs" />
-    <Compile Include="Environment.cs" />
-    <Compile Include="EnvironmentApi.cs" />
-    <Compile Include="EnvironmentApi.Events.cs">
-      <DependentUpon>EnvironmentApi.cs</DependentUpon>
-    </Compile>
-    <Compile Include="EnvironmentApi.Links.cs">
-      <DependentUpon>EnvironmentApi.cs</DependentUpon>
-    </Compile>
-    <Compile Include="EnvironmentApi.Nodes.cs">
-      <DependentUpon>EnvironmentApi.cs</DependentUpon>
-    </Compile>
-    <Compile Include="EnvironmentApi.StatPoints.cs">
-      <DependentUpon>EnvironmentApi.cs</DependentUpon>
-    </Compile>
-    <Compile Include="EnvironmentApi.Systems.cs">
-      <DependentUpon>EnvironmentApi.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Event.cs" />
-    <Compile Include="EventLevel.cs" />
-    <Compile Include="HttpBasicCredentials.cs" />
-    <Compile Include="HttpCredentials.cs" />
-    <Compile Include="HttpHelper.cs" />
-    <Compile Include="HttpOAuth2Credentials.cs" />
-    <Compile Include="Link.cs" />
-    <Compile Include="Link.Equality.cs">
-      <DependentUpon>Link.cs</DependentUpon>
-    </Compile>
-    <Compile Include="LinkType.cs" />
-    <Compile Include="Node.cs" />
-    <Compile Include="Node.Equality.cs">
-      <DependentUpon>Node.cs</DependentUpon>
-    </Compile>
-    <Compile Include="NodeRef.cs" />
-    <Compile Include="NodeRef.Equality.cs">
-      <DependentUpon>NodeRef.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="StatPoint.cs" />
-    <Compile Include="System.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\packages\GitVersionTask.4.0.0-beta0012\build\GitVersionTask.targets" Condition="Exists('..\packages\GitVersionTask.4.0.0-beta0012\build\GitVersionTask.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\GitVersionTask.4.0.0-beta0012\build\GitVersionTask.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\GitVersionTask.4.0.0-beta0012\build\GitVersionTask.targets'))" />
-  </Target>
+
 </Project>

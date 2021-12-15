@@ -1,5 +1,9 @@
 <Project>
  <PropertyGroup>
    <GitVersion_NoFetchEnabled>true</GitVersion_NoFetchEnabled>
+   <Copyright>Copyright © AIMS Innovation 2016-2021</Copyright>
+   <Product>AIMS .NET SDK</Product>
+   <Authors>AIMS Innovation</Authors>
+   <Company>AIMS Innovation</Company>
  </PropertyGroup>
 </Project>
