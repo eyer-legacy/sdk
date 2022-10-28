@@ -1,0 +1,60 @@
+name: Build
+on:
+  push:
+    branches:
+      - develop
+  pull_request:
+    types: [opened, synchronize, reopened]
+jobs:
+  build:
+    name: Build and analyze
+    runs-on: windows-latest
+    steps:
+      - name: Set up JDK 11
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.11
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of SonarCloud analysis
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v1
+        with:
+          path: ~/sonar/cache
+          key: ${{runner.os}}-sonar
+          restore-keys: ${{runner.os}}-sonar
+      - name: Cache SonarCloud scanner
+        id: cache-sonar-scanner
+        uses: actions/cache@v1
+        with:
+          path: ./.sonar/scanner
+          key: ${{runner.os}}-sonar-scanner
+          restore-keys: ${{runner.os}}-sonar-scanner
+      - name: Install SonarCloud scanner
+        if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
+        shell: powershell
+        run: |
+          New-Item -Path ./.sonar/scanner -ItemType Directory
+          dotnet tool update dotnet-sonarscanner --tool-path ./.sonar/scanner
+      - name: Restore packages
+        run: |
+          dotnet nuget add source --username aimsinnovation --password ${{secrets.GITHUB_TOKEN}} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/aimsinnovation/index.json"
+          dotnet restore SDK.sln
+      #- name: Init SonarCloud analysis
+      #  env:
+      #    GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}  # Needed to get PR information, if any
+      #    SONAR_TOKEN: ${{secrets.SONAR_TOKEN}}
+      #  run: ./.sonar/scanner/dotnet-sonarscanner begin /k:"aimsinnovation_sdk" /o:"aimsinnovation" /d:sonar.login="${{secrets.SONAR_TOKEN}}" /d:sonar.host.url="https://sonarcloud.io"
+      - name: Build
+        run: dotnet build SDK.sln -c Release
+      - name: Run tests
+        run: dotnet test SDK.sln -c Release --no-build
+      #- name: Finish SonarCloud analysis
+      #  env:
+      #    GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}  # Needed to get PR information, if any
+      #    SONAR_TOKEN: ${{secrets.SONAR_TOKEN}}
+      #  run: ./.sonar/scanner/dotnet-sonarscanner end /d:sonar.login="${{secrets.SONAR_TOKEN}}"
+      - name: Publish packages
+        run: |
+          dotnet pack SDK.sln -c Release --no-build --output ./output
+          dotnet nuget push ".\output\*.nupkg" --source "github" --api-key ${{secrets.GITHUB_TOKEN}}
