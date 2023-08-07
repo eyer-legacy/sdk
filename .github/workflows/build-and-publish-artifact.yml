@@ -83,6 +83,7 @@ jobs:
         with:
           major-identifier: /(?!.*)/
           minor-identifier: /(?!.*)/
+          dev-branch: develop
   
       - name: Write Version File
         run: echo ${{ steps.generate-version.outputs.version }} > .version             
