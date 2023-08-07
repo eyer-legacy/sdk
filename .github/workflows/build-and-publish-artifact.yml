@@ -91,7 +91,9 @@ jobs:
         run: dotnet pack SDK.sln -c Release --no-build --output ./output
           
       - name: Package Artifact - Zip Items
-        run: zip -r artifact.zip ./output/*.nupkg
+        run: |
+          zip -r artifact.zip ./output/*.nupkg   
+          zip -ur artifact.zip .version   
 
       - name: Publish Artifact (Default Branch)
         if: ${{ (github.head_ref || github.ref_name) == github.event.repository.default_branch }}
