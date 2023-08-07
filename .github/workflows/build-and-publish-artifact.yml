@@ -1,0 +1,109 @@
+name: Build and Publish Artifact
+
+on:
+  push:
+    branches: [$default-branch]
+  pull_request:
+    branches: '*'
+  workflow_dispatch:
+
+env:
+  TEMPORARY_ARTIFACT_RETENTION_DAYS: 1   
+
+jobs:
+  Build-and-Publish-Artifact:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Set Up Build Environment - .NET 6
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 6.0.x
+          source-url: https://nuget.pkg.github.com/aimsinnovation/index.json
+        env:
+          NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
+      - name: Set Up Build Environment - 11
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-package: jre
+          java-version: '11'
+
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v3
+        with:
+          path: ~/sonar/cache
+          key: ${{runner.os}}-sonar
+
+      - name: Cache SonarCloud scanner
+        id: cache-sonar-scanner
+        uses: actions/cache@v3
+        with:
+          path: ./.sonar/scanner
+          key: ${{runner.os}}-sonar-scanner
+
+      - name: Install SonarCloud scanner
+        if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p ./.sonar/scanner
+          dotnet tool update dotnet-sonarscanner --tool-path ./.sonar/scanner
+
+      - name: Install code coverage tool
+        run: dotnet tool update --global dotnet-coverage
+
+      - name: Restore NuGet packages
+        run: dotnet restore SDK.sln
+
+      - name: Init SonarCloud analysis
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          SONAR_TOKEN: ${{secrets.SONAR_TOKEN}}
+        run: ./.sonar/scanner/dotnet-sonarscanner begin /k:"aimsinnovation_sdk" /o:"aimsinnovation" /d:sonar.login="${{secrets.SONAR_TOKEN}}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths=test-results/**/coverage.opencover.xml
+
+      - name: Build
+        run: dotnet build SDK.sln -c Release -p:PackageVersion=${{ steps.generate-version.outputs.version }}
+
+      - name: Run tests
+        run: dotnet test SDK.sln -c Release --no-build --collect:"XPlat Code Coverage" --results-directory test-results -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
+
+      - name: Finish SonarCloud analysis
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}  
+          SONAR_TOKEN: ${{secrets.SONAR_TOKEN}}
+        run: ./.sonar/scanner/dotnet-sonarscanner end /d:sonar.login="${{secrets.SONAR_TOKEN}}"
+
+      - name: Generate Version
+        id: generate-version
+        uses: codacy/git-version@2.7.1
+        with:
+          major-identifier: /(?!.*)/
+          minor-identifier: /(?!.*)/
+  
+      - name: Write Version File
+        run: echo ${{ steps.generate-version.outputs.version }} > .version             
+           
+      - name: Pack
+        run: dotnet pack SDK.sln -c Release --no-build --output ./output
+          
+      - name: Package Artifact - Zip Items
+        run: zip -r artifact.zip ./output/*.nupkg
+
+      - name: Publish Artifact (Default Branch)
+        if: ${{ (github.head_ref || github.ref_name) == github.event.repository.default_branch }}
+        uses: actions/upload-artifact@master
+        with:
+          path: artifact.zip
+          name: ${{ github.event.repository.name }}-${{ steps.generate-version.outputs.version }}.zip
+
+      - name: Publish Artifact (Non-Default Branch)
+        if: ${{ (github.head_ref || github.ref_name) != github.event.repository.default_branch }}
+        uses: actions/upload-artifact@master
+        with:
+          path: artifact.zip
+          name: ${{ github.event.repository.name }}-${{ steps.generate-version.outputs.version }}.zip
+          retention-days: ${{ env.TEMPORARY_ARTIFACT_RETENTION_DAYS }}  
